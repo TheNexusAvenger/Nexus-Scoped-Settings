@@ -13,6 +13,7 @@ GenericScope.__index = GenericScope
 export type GenericScope = {
     Settings: {[string]: any},
     Parent: Types.SettingsScope?,
+    new: (SerializationData: any?, ParentScope: Types.SettingsScope?) -> (GenericScope),
 } & Types.SettingsScope
 
 
