@@ -5,6 +5,7 @@ Main class for Scroped Settings.
 --]]
 --!strict
 
+local Event = require(script:WaitForChild("Event"))
 local GenericScope = require(script:WaitForChild("GenericScope"))
 local PlatformScope = require(script:WaitForChild("PlatformScope"))
 local UnserializedScope = require(script:WaitForChild("UnserializedScope"))
@@ -14,15 +15,17 @@ local ScopedSettings = {}
 ScopedSettings.__index = ScopedSettings
 
 export type ScopedSettings = {
-    --TODO: Events
+    SettingChanged: Event.Event<string, any?>,
     Scopes: {[string]: Types.SettingsScope},
     OuterScope: Types.SettingsScope?,
     new: () -> (ScopedSettings),
     CreatePlayerDefault: (SerializationData: {[string]: any}?) -> (ScopedSettings),
+    GetSettingChangedEvent: (self: ScopedSettings, Key: string) -> (Event.Event<any?>),
     Get: (self: ScopedSettings, Key: string, ...any) -> (any?),
     Set: (self: ScopedSettings, Scope: string, Key: string, Value: any?, ...any) -> (),
     AddScope: (self: ScopedSettings, ScopeName: string, Scope: Types.SettingsScope) -> (),
     Serialize: (self: ScopedSettings) -> ({[string]: any}),
+    Destroy: (self: ScopedSettings) -> (),
 }
 
 
@@ -53,8 +56,20 @@ Creates a scoped settings instance without scopes.
 --]]
 function ScopedSettings.new(): ScopedSettings
     return (setmetatable({
+        SettingChanged = Event.new(),
         Scopes = {},
+        SettingChangedEvents = {},
     }, ScopedSettings) :: any) :: ScopedSettings
+end
+
+--[[
+Returns a changed event for a setting.
+--]]
+function ScopedSettings:GetSettingChangedEvent(Key: string): Event.Event<any?>
+    if not self.SettingChangedEvents[Key] then
+        self.SettingChangedEvents[Key] = Event.new()
+    end
+    return self.SettingChangedEvents[Key]
 end
 
 --[[
@@ -80,7 +95,15 @@ function ScopedSettings:Set(Scope: string, Key: string, Value: any?, ...: any): 
     end
 
     --Set the value.
+    local OriginalValue = self:Get(Key, ...)
     self.Scopes[Scope]:Set(Key, Value, ...)
+
+    --Fire changed events.
+    if Value == OriginalValue then return end
+    self.SettingChanged:Fire(Key, Value)
+    if self.SettingChangedEvents[Key] then
+        self.SettingChangedEvents[Key]:Fire(Value)
+    end
 end
 
 --[[
@@ -103,6 +126,17 @@ function ScopedSettings:Serialize(): {[string]: any}
         SerializedScopes[ScopeName] = Scope:Serialize()
     end
     return SerializedScopes
+end
+
+--[[
+Disconnects the changed events.
+--]]
+function ScopedSettings:Destroy(): ()
+    self.SettingChanged:Destroy()
+    for _, Event in self.SettingChangedEvents do
+        Event:Destroy()
+    end
+    self.SettingChangedEvents = {}
 end
 
 

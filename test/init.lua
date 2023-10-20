@@ -55,9 +55,11 @@ return function()
             local Settings = NexusScopedSettings.new()
             Settings:AddScope("Scope1", {
                 Set = function(_, _, Value) ScopeValue1 = Value end,
+                Get = function() end,
             } :: any)
             Settings:AddScope("Scope2", {
                 Set = function(_, _, Value) ScopeValue2 = Value end,
+                Get = function() end,
             } :: any)
 
             Settings:Set("Scope1", "Key", "Value1")
@@ -76,6 +78,75 @@ return function()
         it("should throw an error when setting an unknown scope.", function()
             local Settings = NexusScopedSettings.new()
             expect(function() Settings:Set("Unknown", "Key", "Value") end).to.throw("Scope \"Unknown\" does not exist. Use AddScope before calling Set.")
+        end)
+
+        it("should fire changed events.", function()
+            local ChangedValue1, ChangedValue2 = nil, nil
+            local Settings = NexusScopedSettings.new()
+            Settings:AddScope("Scope1", {
+                Set = function() end,
+                Get = function() return "Value1" end,
+            } :: any)
+            Settings.SettingChanged:Connect(function(_, Value) ChangedValue1 = Value end)
+            Settings:GetSettingChangedEvent("Key"):Connect(function(Value) ChangedValue2 = Value end)
+
+            Settings:Set("Scope1", "Key", "Value2")
+            task.wait()
+            expect(ChangedValue1).to.equal("Value2")
+            expect(ChangedValue2).to.equal("Value2")
+        end)
+
+        it("should not fire changed events when value is unchanged.", function()
+            local ChangedValue1, ChangedValue2 = nil, nil
+            local Settings = NexusScopedSettings.new()
+            Settings:AddScope("Scope1", {
+                Set = function() end,
+                Get = function() return "Value1" end,
+            } :: any)
+            Settings.SettingChanged:Connect(function(_, Value) ChangedValue1 = Value end)
+            Settings:GetSettingChangedEvent("Key"):Connect(function(Value) ChangedValue2 = Value end)
+
+            Settings:Set("Scope1", "Key", "Value1")
+            task.wait()
+            expect(ChangedValue1).to.equal(nil)
+            expect(ChangedValue2).to.equal(nil)
+        end)
+
+        it("should not fire changed events when the outer scope value is unchanged.", function()
+            local ChangedValue1, ChangedValue2 = nil, nil
+            local Settings = NexusScopedSettings.new()
+            Settings:AddScope("Scope1", {
+                Set = function() end,
+                Get = function() return "Value1" end,
+            } :: any)
+            Settings:AddScope("Scope2", {
+                Set = function() end,
+                Get = function() return "Value2" end,
+            } :: any)
+            Settings.SettingChanged:Connect(function(_, Value) ChangedValue1 = Value end)
+            Settings:GetSettingChangedEvent("Key"):Connect(function(Value) ChangedValue2 = Value end)
+
+            Settings:Set("Scope1", "Key", "Value2")
+            task.wait()
+            expect(ChangedValue1).to.equal(nil)
+            expect(ChangedValue2).to.equal(nil)
+        end)
+
+        it("should disconnect events.", function()
+            local ChangedValue1, ChangedValue2 = nil, nil
+            local Settings = NexusScopedSettings.new()
+            Settings:AddScope("Scope1", {
+                Set = function() end,
+                Get = function() return "Value1" end,
+            } :: any)
+            Settings.SettingChanged:Connect(function(_, Value) ChangedValue1 = Value end)
+            Settings:GetSettingChangedEvent("Key"):Connect(function(Value) ChangedValue2 = Value end)
+
+            Settings:Destroy()
+            Settings:Set("Scope1", "Key", "Value2")
+            task.wait()
+            expect(ChangedValue1).to.equal(nil)
+            expect(ChangedValue2).to.equal(nil)
         end)
     end)
 
