@@ -10,7 +10,7 @@
         },
         "TestService": {
             "$className": "TestService",
-            "NexusScopedSettingsTests": {
+            "NexusScopedSettings.spec": {
                 "$path": "./test"
             }
         }
