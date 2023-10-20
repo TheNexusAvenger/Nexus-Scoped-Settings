@@ -14,26 +14,12 @@ local Types = require(script:WaitForChild("Types"))
 local ScopedSettings = {}
 ScopedSettings.__index = ScopedSettings
 
-export type ScopedSettings = {
-    SettingChanged: Event.Event<string, any?>,
-    Scopes: {[string]: Types.SettingsScope},
-    OuterScope: Types.SettingsScope?,
-    new: () -> (ScopedSettings),
-    CreatePlayerDefault: (SerializationData: {[string]: any}?) -> (ScopedSettings),
-    GetSettingChangedEvent: (self: ScopedSettings, Key: string) -> (Event.Event<any?>),
-    Get: (self: ScopedSettings, Key: string, ...any) -> (any?),
-    Set: (self: ScopedSettings, Scope: string, Key: string, Value: any?, ...any) -> (),
-    AddScope: (self: ScopedSettings, ScopeName: string, Scope: Types.SettingsScope) -> (),
-    Serialize: (self: ScopedSettings) -> ({[string]: any}),
-    Destroy: (self: ScopedSettings) -> (),
-}
-
 
 
 --[[
 Creates a settings instance with the default scopes for a player.
 --]]
-function ScopedSettings.CreatePlayerDefault(SerializationData: {[string]: any}?): ScopedSettings
+function ScopedSettings.CreatePlayerDefault(SerializationData: {[string]: any}?): Types.ScopedSettings
     local NewSerializationData = SerializationData or {} :: {[string]: any}
 
     --Create the scopes.
@@ -54,12 +40,12 @@ end
 --[[
 Creates a scoped settings instance without scopes.
 --]]
-function ScopedSettings.new(): ScopedSettings
+function ScopedSettings.new(): Types.ScopedSettings
     return (setmetatable({
         SettingChanged = Event.new(),
         Scopes = {},
         SettingChangedEvents = {},
-    }, ScopedSettings) :: any) :: ScopedSettings
+    }, ScopedSettings) :: any) :: Types.ScopedSettings
 end
 
 --[[
@@ -141,4 +127,4 @@ end
 
 
 
-return (ScopedSettings :: any) :: ScopedSettings
+return (ScopedSettings :: any) :: Types.ScopedSettings
