@@ -94,6 +94,9 @@ Returns an instance of settings for the given key.
 Depending on CreateSettingsFunction, this may yield.
 --]]
 function ReplicatedPlayerSettingsRepository:Get(Key: Player): Types.ScopedSettings
+    if RunService:IsClient() and Key and Key ~= Players.LocalPlayer then
+        error(`The client is only able to get the settings of their own player, not {Key}`)
+    end
     return self.SettingsRepository:Get(Key)
 end
 
