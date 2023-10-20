@@ -6,6 +6,7 @@ Scope that is tied to the type of hardware of a user.
 --!strict
 
 local GuiService = game:GetService("GuiService")
+local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
 
 local FLAG_YES = "Y"
@@ -144,6 +145,10 @@ Returns the value for a setting.
 The returned value may be the parent scope instead of the current one.
 --]]
 function PlatformScope:Get(Key: string, HardwareKey: string?, ...: any?): any?
+    if RunService:IsServer() and not HardwareKey then
+        error("Getting value from platform scope requires a hardware key when on the server.")
+    end
+
     local MatchedHardwareKey = self:GetClosestHardwareKey(HardwareKey or self.CreateHardwareKey())
     if MatchedHardwareKey then
         local Value = self.Settings[MatchedHardwareKey][Key]
@@ -161,6 +166,10 @@ end
 Sets the setting for the current scope.
 --]]
 function PlatformScope:Set(Key: string, Value: any?, HardwareKey: string?, ...: any?): ()
+    if RunService:IsServer() and not HardwareKey then
+        error("Setting value in platform scope requires a hardware key when on the server.")
+    end
+
     --Reprocess the key to ensure it isn't corrupted by the client.
     if HardwareKey then
         HardwareKey = self.CreateHardwareKey(self.ParseHardwareKey(HardwareKey))
