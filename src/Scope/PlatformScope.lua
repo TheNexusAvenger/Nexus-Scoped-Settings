@@ -146,7 +146,10 @@ The returned value may be the parent scope instead of the current one.
 --]]
 function PlatformScope:Get(Key: string, HardwareKey: string?, ...: any?): any?
     if RunService:IsServer() and not HardwareKey then
-        error("Getting value from platform scope requires a hardware key when on the server.")
+        if self.Parent then
+            return self.Parent:Get(Key, HardwareKey, ...)
+        end
+        return nil
     end
 
     local MatchedHardwareKey = self:GetClosestHardwareKey(HardwareKey or self.CreateHardwareKey())
@@ -157,7 +160,7 @@ function PlatformScope:Get(Key: string, HardwareKey: string?, ...: any?): any?
         end
     end
     if self.Parent then
-        return self.Parent:Get(Key, HardwareKey, ...)
+        return self.Parent:Get(Key, HardwareKey :: any, ...)
     end
     return nil
 end
