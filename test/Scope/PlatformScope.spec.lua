@@ -6,7 +6,7 @@ Tests the PlatformScope class.
 --!strict
 --$NexusUnitTestExtensions
 
-local PlatformScope = require(game:GetService("ReplicatedStorage").NexusScopedSettings.PlatformScope)
+local PlatformScope = require(game:GetService("ReplicatedStorage").NexusScopedSettings.Scope.PlatformScope)
 
 return function()
     describe("The PlatformScope ParseHardwareKey helper method", function()

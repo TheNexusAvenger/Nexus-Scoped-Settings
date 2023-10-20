@@ -5,7 +5,7 @@ Tests the UnserializedScope class.
 --]]
 --!strict
 
-local UnserializedScope = require(game:GetService("ReplicatedStorage").NexusScopedSettings.UnserializedScope)
+local UnserializedScope = require(game:GetService("ReplicatedStorage").NexusScopedSettings.Scope.UnserializedScope)
 
 return function()
     describe("An UnserializedScope instance", function()

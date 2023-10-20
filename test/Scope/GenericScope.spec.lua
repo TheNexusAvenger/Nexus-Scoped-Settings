@@ -6,7 +6,7 @@ Tests the GenericScope class.
 --!strict
 --$NexusUnitTestExtensions
 
-local GenericScope = require(game:GetService("ReplicatedStorage").NexusScopedSettings.GenericScope)
+local GenericScope = require(game:GetService("ReplicatedStorage").NexusScopedSettings.Scope.GenericScope)
 
 return function()
     describe("A GenericScope instance", function()

@@ -6,9 +6,9 @@ Main class for Scroped Settings.
 --!strict
 
 local Event = require(script:WaitForChild("Event"))
-local GenericScope = require(script:WaitForChild("GenericScope"))
-local PlatformScope = require(script:WaitForChild("PlatformScope"))
-local UnserializedScope = require(script:WaitForChild("UnserializedScope"))
+local GenericScope = require(script:WaitForChild("Scope"):WaitForChild("GenericScope"))
+local PlatformScope = require(script:WaitForChild("Scope"):WaitForChild("PlatformScope"))
+local UnserializedScope = require(script:WaitForChild("Scope"):WaitForChild("UnserializedScope"))
 local Types = require(script:WaitForChild("Types"))
 
 local ScopedSettings = {}

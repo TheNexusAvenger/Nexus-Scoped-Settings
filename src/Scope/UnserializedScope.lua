@@ -7,7 +7,7 @@ This is only intended for storing default setting.
 --!strict
 
 local GenericScope = require(script.Parent:WaitForChild("GenericScope"))
-local Types = require(script.Parent:WaitForChild("Types"))
+local Types = require(script.Parent.Parent:WaitForChild("Types"))
 
 local UnserializedScope = {}
 UnserializedScope.__index = UnserializedScope

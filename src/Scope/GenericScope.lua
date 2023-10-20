@@ -5,7 +5,7 @@ Generic scope for storing values.
 --]]
 --!strict
 
-local Types = require(script.Parent:WaitForChild("Types"))
+local Types = require(script.Parent.Parent:WaitForChild("Types"))
 
 local GenericScope = {}
 GenericScope.__index = GenericScope

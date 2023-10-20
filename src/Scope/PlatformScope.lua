@@ -28,7 +28,7 @@ local HARDWARE_INDICATORS = {
     },
 }
 
-local Types = require(script.Parent:WaitForChild("Types"))
+local Types = require(script.Parent.Parent:WaitForChild("Types"))
 
 local PlatformScope = {}
 PlatformScope.__index = PlatformScope
